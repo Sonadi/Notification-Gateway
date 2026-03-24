@@ -1,52 +1,46 @@
 const express = require('express');
 const router = express.Router();
-require('dotenv').config();
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const client = require('twilio')(accountSid, authToken);
-
-
-const sendSMS = async (to, body, res) => {
-    try {
-        const msg = await client.messages.create({
-            from: process.env.TWILIO_PHONE_NUMBER,
-            to,
-            body
-        });
-        res.status(200).json({ success: true, sid: msg.sid });
-    } catch (error) {
-        console.error('Error sending SMS:', error);
-        res.status(500).json({ success: false, error: error.message });
-    }
-};
-
-
-router.post('/sms/assigned', async (req, res) => {
-    const { to } = req.body;
-    if (!to) return res.status(400).json({ error: 'Phone number is required.' });
+// 🔔 Order Assigned
+router.post('/assigned', (req, res) => {
+    const io = req.app.get("io");
 
     const message = "✅ Your order has been assigned to a delivery personnel.";
-    sendSMS(to, message, res);
+
+    io.emit("notification", {
+        type: "ORDER_ASSIGNED",
+        message: message
+    });
+
+    res.json({ success: true, message });
 });
 
-
-router.post('/sms/accepted', async (req, res) => {
-    const { to } = req.body;
-    if (!to) return res.status(400).json({ error: 'Phone number is required.' });
+// 🔔 Order Accepted
+router.post('/accepted', (req, res) => {
+    const io = req.app.get("io");
 
     const message = "✅ Your order has been accepted by the restaurant.";
-    sendSMS(to, message, res);
+
+    io.emit("notification", {
+        type: "ORDER_ACCEPTED",
+        message: message
+    });
+
+    res.json({ success: true, message });
 });
 
-
-router.post('/sms/payment', async (req, res) => {
-    const { to } = req.body;
-    if (!to) return res.status(400).json({ error: 'Phone number is required.' });
+// 🔔 Payment Success
+router.post('/payment', (req, res) => {
+    const io = req.app.get("io");
 
     const message = "✅ Payment successful! Thank you for your order.";
-    sendSMS(to, message, res);
+
+    io.emit("notification", {
+        type: "PAYMENT_SUCCESS",
+        message: message
+    });
+
+    res.json({ success: true, message });
 });
 
 module.exports = router;
-//use the till
