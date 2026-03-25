@@ -1,15 +1,13 @@
-FROM node:18-alpine
+FROM node:18-slim
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --only=production
+
+RUN npm install
 
 COPY . .
 
-# Copy the .env file
-COPY .env .env
+EXPOSE 5045
 
-EXPOSE 5056
-
-CMD ["node", "server.js"]
+CMD ["node", "servers.js"]
