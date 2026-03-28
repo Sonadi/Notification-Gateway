@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
 const notificationRoutes = require('./routes/notificationRoutes');
 app.use('/api/notification', notificationRoutes);
 //
-const PORT = process.env.PORT || 5045;
+const PORT = process.env.PORT || 4000;
 
 // ⚠️ MUST use server.listen
 server.listen(PORT, () => {
